@@ -17,6 +17,7 @@ export default class Login extends React.Component {
     let email = this.refs.email.value.trim();
     let password = this.refs.password.value.trim();
 
+    // Meteor default login with password functionality
     Meteor.loginWithPassword({email}, password, () => {
       Rooms.insert({
         email 
@@ -25,6 +26,7 @@ export default class Login extends React.Component {
       Session.set('gameRoom', cpInRoom[0]._id);
     });
 
+    // Meteor login error
     Meteor.loginWithPassword({email}, password, (err) => {
       if (err) {
         this.setState({error: 'Unable to login. Check email and password.'});

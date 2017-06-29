@@ -5,6 +5,9 @@ import { Rooms } from '../api/rooms';
 import RoomPlayers from './RoomPlayers';
 
 export default class Room extends React.Component {
+  // Logout Function
+  //  Get Current User Session
+  //  Remove user from Room
   onLogout() {
     let cpInSession = Session.get('gameRoom');
     Rooms.remove({"_id": cpInSession })

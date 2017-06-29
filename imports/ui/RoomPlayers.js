@@ -12,7 +12,6 @@ export default class RoomPlayers extends React.Component {
   }
 
   componentDidMount() {
-    console.log('componentDidMount LinksList');
     this.roomTracker = Tracker.autorun(() => {
       Meteor.subscribe('rooms');
       const rooms = Rooms.find().fetch();
@@ -21,7 +20,6 @@ export default class RoomPlayers extends React.Component {
   }
 
   componentWillUnmount() {
-    console.log('componentWillUnmount LinksList');
     this.roomTracker.stop();
   }
 
@@ -39,10 +37,10 @@ export default class RoomPlayers extends React.Component {
   render() {
     return (
       <div>
-      <p>Room Players</p>
-      <div>
-      {this.renderPlayerRoom()}
-      </div>
+        <p>Room Players</p>
+        <div>
+          {this.renderPlayerRoom()}
+        </div>
       </div>
     );
   }
