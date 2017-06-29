@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import expect from 'expect';
 
-import { Players } from './../api/players';
+import { Players } from './../../api/players';
 
 if ( Meteor.isServer) {
   describe('Players', function() {

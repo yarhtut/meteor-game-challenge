@@ -1,6 +1,6 @@
 import expect from 'expect';
 import { Meteor } from 'meteor/meteor';
-import { validateNewUser } from './../api/users';
+import { validateNewUser } from './../../api/users';
 
 if (Meteor.isServer) {
   describe('Validate User', function() {

@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import expect from 'expect';
 
-import { Rooms } from './../api/rooms';
+import { Rooms } from './../../api/rooms';
 
 if ( Meteor.isServer) {
   describe('Rooms', function() {

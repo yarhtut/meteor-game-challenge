@@ -1,7 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router';
 import { Meteor } from 'meteor/meteor';
-
 import { Rooms } from '../api/rooms';
 
 export default class Login extends React.Component {
@@ -11,6 +10,9 @@ export default class Login extends React.Component {
       error: ''
     };
   }
+
+  // Form submit function for Login
+  // @params in Events { email , password }
   onSubmit(e) {
     e.preventDefault();
 
@@ -55,3 +57,4 @@ export default class Login extends React.Component {
     );
   }
 }
+
