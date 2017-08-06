@@ -6,6 +6,7 @@ import Signup from '../ui/Signup';
 import Room from '../ui/Room';
 import NotFound from '../ui/NotFound';
 import Login from '../ui/Login';
+import Game from '../ui/Game';
 
 const unauthenticatedPages = ['/', '/signup'];
 const authenticatedPages = ['/rooms'];
@@ -40,6 +41,7 @@ export const routes = (
     <Route path="/" component={Login} onEnter={onEnterPublicPage}/>
     <Route path="/signup" component={Signup} onEnter={onEnterPublicPage}/>
     <Route path="/rooms" component={Room} onEnter={onEnterPrivatePage}/>
+    <Route path="/game/:id" component={Game} onEnter={onEnterPrivatePage}/>
     <Route path="*" component={NotFound}/>
   </Router>
 );

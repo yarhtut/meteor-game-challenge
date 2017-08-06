@@ -24,12 +24,6 @@ export default class Signup extends React.Component {
       if (err) {
         this.setState({error: err.reason});
       } else {
-        Rooms.insert({
-          email 
-        })
-        let cpInRoom = Rooms.find({ "email": email }).fetch();
-        Session.set('gameRoom', cpInRoom[0]._id);
-        this.setState({error: ''});
       }
     });
   }
