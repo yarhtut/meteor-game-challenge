@@ -1,7 +1,11 @@
+// Meteor
 import { Meteor } from 'meteor/meteor';
+
+// React
 import React from 'react';
 import { Router, Route, browserHistory } from 'react-router';
 
+// Template
 import Signup from '../ui/Signup';
 import Room from '../ui/Room';
 import NotFound from '../ui/NotFound';
@@ -9,7 +13,7 @@ import Login from '../ui/Login';
 import Game from '../ui/Game';
 
 const unauthenticatedPages = ['/', '/signup'];
-const authenticatedPages = ['/rooms'];
+const authenticatedPages = ['/rooms', '/games/'];
 
 
 const onEnterPublicPage = () => {

@@ -1,18 +1,16 @@
+// Meteor 
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { Accounts } from 'meteor/accounts-base';
 
-import { Games } from '../api/games';
-import { Rooms } from '../api/rooms';
-import { GamesHistory } from '../api/gameHistory';
-
+// React
 import React from 'react';
 import { Router, Route, browserHistory } from 'react-router';
 
-import Signup from '../ui/Signup';
-import Room from '../ui/Room';
-import NotFound from '../ui/NotFound';
-import Login from '../ui/Login';
+// Model
+import { Games } from '../api/games';
+import { Rooms } from '../api/rooms';
+import { GamesHistory } from '../api/gameHistory';
 
 export default class Game extends React.Component {
   constructor(props){
@@ -23,67 +21,78 @@ export default class Game extends React.Component {
   }
 
   componentWillMount() {
+    // listen the data changes   
     this.gameTracker = Tracker.autorun(() => {
       Meteor.subscribe('games');
       var games = Games.find({ _id: this.props.params.id }).fetch();
+
+      // add games into current state
       this.setState({
         games
       });
     });
   }
 
+  // after we render stop the data changes
   componentWillUnmount() {
     this.gameTracker.stop();
   }
-
-
+ 
   renderGameRoom() {
-  currentUser = Meteor.user();
-  currentgame = this.state.games.map((game) => {
-    return game.game.includes(currentUser._id)
-  });
+    currentUser = Meteor.user();
 
-  if ( currentgame[0] == true ) {
-    return this.state.games.map((game) => {
-      return <p key={game._id}>GameId: {game._id}- FirstPlayer: {game.firstPlayerEmail} - SecondPlayer: {game.secondPlayerEmail}</p>
-      });
-  }else {
-    Accounts.logout();
-    browserHistory.replace('/');
-  }
-}
+    currentGame = this.state.games.map((game) => {
+      return game.game.includes(currentUser._id)
+    });
 
-onLogout() {
-
-  currentUser = Meteor.user();
-  currentgame = this.state.games.map((game) => {
-
-    if (game.game.includes(currentUser._id)) {
-
-      var cGame = game._id;
-       
-      GamesHistory.insert({
-        game:              game.game,
-        firstPlayer:       game.firstPlayer,
-        firstPlayerEmail:  game.firstPlayerEmail,
-        secondPlayer:      game.secondPlayer,
-        secondPlayerEmail: game.secondPlayerEmail 
-      });
-
-      Games.remove({ _id: cGame})
+    // current user in game ?
+    if ( currentGame[0] == true ) {
+      return this.state.games.map((game) => {
+        return <p key={game._id}>GameId: {game._id}- FirstPlayer: {game.firstPlayerEmail} - SecondPlayer: {game.secondPlayerEmail}</p>
+        });
+    } else {
+    // TODO: support to put back inot Queue instead of force logout
       Accounts.logout();
-
       browserHistory.replace('/');
     }
-  })
-}
+  }
 
-render() {
-  return(
-    <div>
-      <button onClick={this.onLogout.bind(this)}>Logout</button>
-      { this.renderGameRoom() }
-    </div>
+
+  // TODO: change game model field to meaningful
+  onLogout() {
+    currentUser = Meteor.user();
+
+    this.state.games.map((game) => {
+      // current user in the game ?
+      // TODO: change game model field to meaningful
+      if (game.game.includes(currentUser._id)) {
+
+        // store current game into GameHistory model
+        GamesHistory.insert({
+          game:              game.game,
+          firstPlayer:       game.firstPlayer,
+          firstPlayerEmail:  game.firstPlayerEmail,
+          secondPlayer:      game.secondPlayer,
+          secondPlayerEmail: game.secondPlayerEmail 
+        });
+        
+        // remove current game
+        let currentGame = game._id;
+        Games.remove({ _id: currentGame})
+
+        Accounts.logout();
+
+        browserHistory.replace('/');
+      }
+    })
+  }
+
+  render() {
+    return (
+      <div className='page-content'>
+        <button onClick={this.onLogout.bind(this)}>Logout</button>
+        { this.renderGameRoom() }
+      </div>
     )
   }
 }

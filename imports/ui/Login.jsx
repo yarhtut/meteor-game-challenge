@@ -1,6 +1,11 @@
+// Meteor
+import { Meteor } from 'meteor/meteor';
+
+// React
 import React from 'react';
 import { Link } from 'react-router';
-import { Meteor } from 'meteor/meteor';
+
+// Model
 import { Rooms } from '../api/rooms';
 import { Games } from '../api/games';
 import { Players } from '../api/players';
@@ -14,8 +19,9 @@ export default class Login extends React.Component {
     }
   }
 
-  // Form submit function for Login
+  // Meteor default Authentication
   // @params in Events { email , password }
+  // TODO: refactor [ extract to login class or something ]
   onSubmit(e) {
     e.preventDefault();
     let email = this.refs.email.value.trim();

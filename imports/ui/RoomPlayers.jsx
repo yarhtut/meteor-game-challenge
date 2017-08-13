@@ -1,9 +1,14 @@
-import React from 'react';
+// Meteor
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
+
+// React
+import React from 'react';
+import { Router, Route, browserHistory, Redirect } from 'react-router';
+
+// Model
 import { Rooms } from '../api/rooms';
 import { Games } from '../api/games';
-import { Router, Route, browserHistory, Redirect } from 'react-router';
 
 export default class RoomPlayers extends React.Component {
   constructor(props) {
@@ -30,7 +35,6 @@ export default class RoomPlayers extends React.Component {
   }
 
   renderPlayerRoom() {
-
     let usersInGame = this.state.games.map((user) => {
       return user.game.includes(currentUser._id)
     });
@@ -49,8 +53,8 @@ export default class RoomPlayers extends React.Component {
 
   render() {
     return (
-      <div>
-        <p>Room Players</p>
+      <div className='page-content'>
+        <p>Player in queue</p>
         {this.renderPlayerRoom()}
       </div>
       );

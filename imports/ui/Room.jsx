@@ -1,9 +1,10 @@
-import React from 'react';
+// Meteor
 import { Accounts } from 'meteor/accounts-base';
 
-import { Rooms } from '../api/rooms';
-import { Games } from '../api/games';
-import { Players } from '../api/games';
+// React
+import React from 'react';
+
+// Template
 import RoomPlayers from './RoomPlayers';
 
 export default class Room extends React.Component {

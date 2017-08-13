@@ -1,7 +1,9 @@
+// Meteor
+import { Accounts } from 'meteor/accounts-base';
+
+// React
 import React from 'react';
 import { Link } from 'react-router';
-import { Accounts } from 'meteor/accounts-base';
-import { Rooms } from '../api/rooms';
 
 export default class Signup extends React.Component {
   constructor(props) {
@@ -33,7 +35,7 @@ export default class Signup extends React.Component {
         <div className='boxed-view__container'>
         <h1>Game Challenge</h1>
 
-        {this.state.error ? <p>{this.state.error}</p> : undefined}
+        { this.state.error ? <p>{ this.state.error }</p> : undefined }
 
         <form onSubmit={this.onSubmit.bind(this)} noValidate className='boxed-view__form'>
           <input type="email" ref="email" name="email" placeholder="Email"/>
