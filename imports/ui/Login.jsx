@@ -2,41 +2,66 @@ import React from 'react';
 import { Link } from 'react-router';
 import { Meteor } from 'meteor/meteor';
 import { Rooms } from '../api/rooms';
+import { Games } from '../api/games';
+import { Players } from '../api/players';
+import { GamesHistory } from '../api/gameHistory';
 
 export default class Login extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       error: ''
-    };
+    }
   }
 
   // Form submit function for Login
   // @params in Events { email , password }
   onSubmit(e) {
     e.preventDefault();
-
     let email = this.refs.email.value.trim();
     let password = this.refs.password.value.trim();
 
     // Meteor default login with password functionality
     Meteor.loginWithPassword({email}, password, () => {
-      Rooms.insert({
-        email 
-      })
-      let cpInRoom = Rooms.find({ "email": email }).fetch();
-      Session.set('gameRoom', cpInRoom[0]._id);
-    });
+      currentUser = Meteor.user();
 
-    // Meteor login error
-    Meteor.loginWithPassword({email}, password, (err) => {
-      if (err) {
-        this.setState({error: 'Unable to login. Check email and password.'});
-      } else {
-        this.setState({error: ''});
+      Rooms.insert({
+        users: currentUser._id,
+        userEmail: email,
+        inGame: false
+      })
+
+      let roomCount = Rooms.find().count();
+
+      if(roomCount == 2 ) {
+        let userInRoom = Rooms.find().fetch();
+        let usersInRoom  = userInRoom.map((room) => room.users);
+        let userEmailInRoom  = userInRoom.map((room) => room.userEmail);
+
+        Games.insert({
+          game:              usersInRoom,
+          firstPlayer:       usersInRoom[0],
+          firstPlayerEmail:  userEmailInRoom[0],
+          secondPlayer:      usersInRoom[1],
+          secondPlayerEmail: userEmailInRoom[1],
+          createGame:        true
+        });
+
+        userInRoom.map((room) => {
+          Players.insert({
+            userId: room.users,
+            userEmail: room.userEmail,
+            againstPlayer: usersInRoom 
+          });
+        });
+
+        let usersIdInRoom  = userInRoom.map((room) => {
+          Rooms.remove({ _id: room._id})
+        });
       }
     });
   }
+
   render() {
     return (
       <div className='boxed-view'>
