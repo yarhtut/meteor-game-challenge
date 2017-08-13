@@ -5,20 +5,20 @@ import { Accounts } from 'meteor/accounts-base';
 import React from 'react';
 
 // Template
-import RoomPlayers from './RoomPlayers';
+import QueuePlayers from './QueuePlayers';
 
-export default class Room extends React.Component {
+export default class Queue extends React.Component {
   // Logout Function
-  // Remove user from Room
+  // TODO: remove from queue model if player leave room
   onLogout() {
     Accounts.logout();
   }
   render() {
     return (
       <div className='page-content'>
-        <h1>Room</h1>
+        <h1>Game Queue</h1>
         <button onClick={this.onLogout.bind(this)}>Logout</button>
-        <RoomPlayers />
+        <QueuePlayers />
       </div>
     );
   }

@@ -9,7 +9,6 @@ import { Router, Route, browserHistory } from 'react-router';
 
 // Model
 import { Games } from '../api/games';
-import { Rooms } from '../api/rooms';
 import { GamesHistory } from '../api/gameHistory';
 
 export default class Game extends React.Component {

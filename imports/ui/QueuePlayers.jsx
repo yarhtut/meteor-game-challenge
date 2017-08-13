@@ -7,10 +7,9 @@ import React from 'react';
 import { Router, Route, browserHistory, Redirect } from 'react-router';
 
 // Model
-import { Rooms } from '../api/rooms';
 import { Games } from '../api/games';
 
-export default class RoomPlayers extends React.Component {
+export default class QueuePlayers extends React.Component {
   constructor(props) {
     super(props);
     this.state = {

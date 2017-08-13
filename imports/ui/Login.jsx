@@ -6,7 +6,7 @@ import React from 'react';
 import { Link } from 'react-router';
 
 // Model
-import { Rooms } from '../api/rooms';
+import { Queues } from '../api/queues';
 import { Games } from '../api/games';
 import { Players } from '../api/players';
 import { GamesHistory } from '../api/gameHistory';
@@ -31,16 +31,16 @@ export default class Login extends React.Component {
     Meteor.loginWithPassword({email}, password, () => {
       currentUser = Meteor.user();
 
-      Rooms.insert({
+      Queues.insert({
         users: currentUser._id,
         userEmail: email,
         inGame: false
       })
 
-      let roomCount = Rooms.find().count();
+      let roomCount = Queues.find().count();
 
       if(roomCount == 2 ) {
-        let userInRoom = Rooms.find().fetch();
+        let userInRoom = Queues.find().fetch();
         let usersInRoom  = userInRoom.map((room) => room.users);
         let userEmailInRoom  = userInRoom.map((room) => room.userEmail);
 
@@ -62,7 +62,7 @@ export default class Login extends React.Component {
         });
 
         let usersIdInRoom  = userInRoom.map((room) => {
-          Rooms.remove({ _id: room._id})
+          Queues.remove({ _id: room._id})
         });
       }
     });
