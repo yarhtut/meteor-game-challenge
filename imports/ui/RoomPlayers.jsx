@@ -13,15 +13,15 @@ export default class RoomPlayers extends React.Component {
     };
   }
 
-  componentDidMount() {
+  componentWillMount() {
     this.gameTracker = Tracker.autorun(() => {
       Meteor.subscribe('games');
       let currentUser = Meteor.user();
      
       let games = Games.find({ game: { $in: [currentUser._id] }}).fetch();
-      this.setState({
+      this.setState(prevState => ({
         games
-      });
+      }));
     });
   }
 
@@ -35,15 +35,15 @@ export default class RoomPlayers extends React.Component {
       return user.game.includes(currentUser._id)
     });
 
-    if ( usersInGame == false  ) {
-      return <img src='https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif' />
-    }
-    else {
+    if ( usersInGame[0] == true  ) {
       let gameId = this.state.games.map((game) => {
         return game._id
       });
       const path = `/game/${gameId}`;
       browserHistory.replace(path);
+    }
+    else {
+      return <img src='https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif' />
     }
   }
 

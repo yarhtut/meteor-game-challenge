@@ -3,6 +3,7 @@ import { Tracker } from 'meteor/tracker';
 import { Accounts } from 'meteor/accounts-base';
 
 import { Games } from '../api/games';
+import { Rooms } from '../api/rooms';
 import { GamesHistory } from '../api/gameHistory';
 
 import React from 'react';
@@ -13,7 +14,6 @@ import Room from '../ui/Room';
 import NotFound from '../ui/NotFound';
 import Login from '../ui/Login';
 
-// Page not found for routing error
 export default class Game extends React.Component {
   constructor(props){
     super(props);
@@ -48,7 +48,8 @@ export default class Game extends React.Component {
       return <p key={game._id}>GameId: {game._id}- FirstPlayer: {game.firstPlayerEmail} - SecondPlayer: {game.secondPlayerEmail}</p>
       });
   }else {
-    return <p> Your game oponenet leave the game you should logout. </p>;
+    Accounts.logout();
+    browserHistory.replace('/');
   }
 }
 
