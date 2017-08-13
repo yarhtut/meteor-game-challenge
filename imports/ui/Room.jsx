@@ -3,6 +3,7 @@ import { Accounts } from 'meteor/accounts-base';
 
 import { Rooms } from '../api/rooms';
 import { Games } from '../api/games';
+import { Players } from '../api/games';
 import RoomPlayers from './RoomPlayers';
 
 export default class Room extends React.Component {

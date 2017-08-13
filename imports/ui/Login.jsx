@@ -3,13 +3,15 @@ import { Link } from 'react-router';
 import { Meteor } from 'meteor/meteor';
 import { Rooms } from '../api/rooms';
 import { Games } from '../api/games';
+import { Players } from '../api/players';
+import { GamesHistory } from '../api/gameHistory';
 
 export default class Login extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       error: ''
-    };
+    }
   }
 
   // Form submit function for Login
@@ -25,6 +27,7 @@ export default class Login extends React.Component {
 
       Rooms.insert({
         users: currentUser._id,
+        userEmail: email,
         inGame: false
       })
 
@@ -33,21 +36,32 @@ export default class Login extends React.Component {
       if(roomCount == 2 ) {
         let userInRoom = Rooms.find().fetch();
         let usersInRoom  = userInRoom.map((room) => room.users);
-
-        let usersIdInRoom  = userInRoom.map((room) => {
-          Rooms.update({ _id: room._id}, {$set: { inGame: true } })
-        });
+        let userEmailInRoom  = userInRoom.map((room) => room.userEmail);
 
         Games.insert({
-          game: usersInRoom,
-          firstUser: usersInRoom[0],
-          secondUser: usersInRoom[1],
-          createGame: true
-        })
-        //Session.set('currentUser', currentUser._id)
-        }
+          game:              usersInRoom,
+          firstPlayer:       usersInRoom[0],
+          firstPlayerEmail:  userEmailInRoom[0],
+          secondPlayer:      usersInRoom[1],
+          secondPlayerEmail: userEmailInRoom[1],
+          createGame:        true
+        });
+
+        userInRoom.map((room) => {
+          Players.insert({
+            userId: room.users,
+            userEmail: room.userEmail,
+            againstPlayer: usersInRoom 
+          });
+        });
+
+        let usersIdInRoom  = userInRoom.map((room) => {
+          Rooms.remove({ _id: room._id})
+        });
+      }
     });
   }
+
   render() {
     return (
       <div className='boxed-view'>

@@ -18,11 +18,10 @@ export default class RoomPlayers extends React.Component {
       Meteor.subscribe('games');
       let currentUser = Meteor.user();
      
-      var games = Games.find({ game: { $in: [currentUser._id] }}).fetch();
+      let games = Games.find({ game: { $in: [currentUser._id] }}).fetch();
       this.setState({
         games
       });
-      console.log(this.state.games)
     });
   }
 
@@ -32,19 +31,16 @@ export default class RoomPlayers extends React.Component {
 
   renderPlayerRoom() {
     let usersInGame = this.state.games.map((user) => {
-      return user.game.includes(currentUser._id)
+      if (user.game.includes(currentUser._id)) {
+        return <img src='https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif' />
+      }else {
+        let gameId = this.state.games.map((game) => {
+          return game._id
+        });
+        const path = `/game/${gameId}`;
+        browserHistory.replace(path);
+      }
     });
-
-    if ( usersInGame == false ) {
-      return <img src='https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif' />
-    }
-    else {
-      let gameId = this.state.games.map((game) => {
-        return game._id
-      });
-      const path = `/game/${gameId}`;
-      browserHistory.replace(path);
-    }
   }
 
   render() {
@@ -53,7 +49,7 @@ export default class RoomPlayers extends React.Component {
         <p>Room Players</p>
         {this.renderPlayerRoom()}
       </div>
-    );
+      );
   }
 };
 
