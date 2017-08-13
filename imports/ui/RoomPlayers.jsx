@@ -30,17 +30,21 @@ export default class RoomPlayers extends React.Component {
   }
 
   renderPlayerRoom() {
+
     let usersInGame = this.state.games.map((user) => {
-      if (user.game.includes(currentUser._id)) {
-        return <img src='https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif' />
-      }else {
-        let gameId = this.state.games.map((game) => {
-          return game._id
-        });
-        const path = `/game/${gameId}`;
-        browserHistory.replace(path);
-      }
+      return user.game.includes(currentUser._id)
     });
+
+    if ( usersInGame == false  ) {
+      return <img src='https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif' />
+    }
+    else {
+      let gameId = this.state.games.map((game) => {
+        return game._id
+      });
+      const path = `/game/${gameId}`;
+      browserHistory.replace(path);
+    }
   }
 
   render() {

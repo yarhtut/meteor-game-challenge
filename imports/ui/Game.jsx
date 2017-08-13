@@ -22,7 +22,7 @@ export default class Game extends React.Component {
     }
   }
 
-  componentDidMount() {
+  componentWillMount() {
     this.gameTracker = Tracker.autorun(() => {
       Meteor.subscribe('games');
       var games = Games.find({ _id: this.props.params.id }).fetch();
@@ -36,19 +36,29 @@ export default class Game extends React.Component {
     this.gameTracker.stop();
   }
 
+
   renderGameRoom() {
+  currentUser = Meteor.user();
+  currentgame = this.state.games.map((game) => {
+    return game.game.includes(currentUser._id)
+  });
+
+  if ( currentgame[0] == true ) {
     return this.state.games.map((game) => {
-      return <p key={game._id}>GameId: {game._id}- FirstPlayer: {game.firstPlayer} - SecondPlayer: {game.secondPlayerEmail}</p>
+      return <p key={game._id}>GameId: {game._id}- FirstPlayer: {game.firstPlayerEmail} - SecondPlayer: {game.secondPlayerEmail}</p>
       });
+  }else {
+    return <p> Your game oponenet leave the game you should logout. </p>;
+  }
 }
 
 onLogout() {
+
   currentUser = Meteor.user();
   currentgame = this.state.games.map((game) => {
-    console.log(game.game)
+
     if (game.game.includes(currentUser._id)) {
 
-      console.log(game._id)
       var cGame = game._id;
        
       GamesHistory.insert({
@@ -63,8 +73,6 @@ onLogout() {
       Accounts.logout();
 
       browserHistory.replace('/');
-    }else {
-      console.log('u r not in the game')
     }
   })
 }
@@ -73,7 +81,6 @@ render() {
   return(
     <div>
       <button onClick={this.onLogout.bind(this)}>Logout</button>
-      <p>Game component here</p>;
       { this.renderGameRoom() }
     </div>
     )
