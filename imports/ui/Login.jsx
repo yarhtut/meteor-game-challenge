@@ -44,20 +44,36 @@ export default class Login extends React.Component {
         let usersInRoom  = userInRoom.map((room) => room.users);
         let userEmailInRoom  = userInRoom.map((room) => room.userEmail);
 
+        gameNumber = [1,2,3,4,5,6,7,8,9,10];
+        const gameNumbers = gameNumber.sort(function() { return 0.5 - Math.random() });
+        const player1 = [];
+        const player2 = [];
+
+        for (var i = 0; i < gameNumbers.length; i += 2) {
+          player1.push(gameNumbers[i]);
+          gameNumbers[i+1] && player2.push(gameNumbers[i+1]);
+        }
+
         Games.insert({
           game:              usersInRoom,
           firstPlayer:       usersInRoom[0],
           firstPlayerEmail:  userEmailInRoom[0],
           secondPlayer:      usersInRoom[1],
           secondPlayerEmail: userEmailInRoom[1],
-          createGame:        true
+          firstPlayerNumbers: player1,
+          secondPlayerNumbers: player2,
+          player1Number: 0,
+          player2Number: 0,
+          player1Win: 0,
+          player2Win: 0,
+          round: 0
         });
 
         userInRoom.map((room) => {
           Players.insert({
             userId: room.users,
             userEmail: room.userEmail,
-            againstPlayer: usersInRoom 
+            againstPlayer: usersInRoom
           });
         });
 
@@ -85,7 +101,7 @@ export default class Login extends React.Component {
           <Link to="/signup">Signup for an account?</Link>
         </div>
       </div>
-    );
-  }
+      );
+}
 }
 
