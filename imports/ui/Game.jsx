@@ -49,18 +49,20 @@ export default class Game extends React.Component {
 
         var player1 = game.firstPlayerNumbers.map((playerNumber) =>  {
           return (
-          <button
-            className='btn btn-card'
-            onClick={this.onPlay.bind(this)}
-            data-number={playerNumber}
-            data-name='player1'
-            key={playerNumber}>
-            {playerNumber}
-          </button>
-          )})
-          var player2 = game.secondPlayerNumbers.map((playerNumber) =>  {
-            return (
-            <button 
+            <button
+              disabled={this.state.games[0].playerTurn == 'player2'}
+              className='btn btn-card'
+              onClick={this.onPlay.bind(this)}
+              data-number={playerNumber}
+              data-name='player1'
+              key={playerNumber}>
+              {playerNumber}
+            </button>
+            )})
+        var player2 = game.secondPlayerNumbers.map((playerNumber) =>  {
+          return (
+            <button
+              disabled={this.state.games[0].playerTurn == 'player1'}
               className='btn btn-card'
               onClick={this.onPlay.bind(this)}
               data-number={playerNumber}
@@ -69,12 +71,15 @@ export default class Game extends React.Component {
               {playerNumber}
             </button>
             )})
-
+        var winner = game.winner ? (<h2 className='winner'>{ game.winner }</h2>) : '';
         return (
           <div>
             <p key={game._id}>GameId: {game._id}- FirstPlayer: {game.firstPlayerEmail} - SecondPlayer: {game.secondPlayerEmail}</p>
             <br />
+            { winner }
             <h1>This is { game.playerTurn } Turn.</h1>
+            <h2>Total Player1 Win is { game.player1Win }.</h2>
+            <h2>Total Player2 Win is { game.player2Win }.</h2>
             { (game.firstPlayer == currentUser._id) ? player1 : player2 }
           </div>
           )
@@ -95,48 +100,69 @@ export default class Game extends React.Component {
       var remove1 = this.state.games[0].firstPlayerNumbers;
 
       var removeIndex1 = remove1.indexOf(parseInt(player1Number));
-      
+
       remove1.splice(removeIndex1, 1);
       Games.update({ _id: this.state.games[0]._id},
-      {$set: { player1Number: parseInt(player1Number), firstPlayerNumbers: remove1  }})
+                   {$set: { player1Number: parseInt(player1Number), firstPlayerNumbers: remove1, playerTurn: 'player2'  }})
 
-    this.gameTracker = Tracker.autorun(() => {
-      Meteor.subscribe('games');
-      var games = Games.find({ _id: this.props.params.id }).fetch();
-      // add games into current state
-      this.setState({
-        games
-      });
-    });
+                   this.gameTracker = Tracker.autorun(() => {
+                     Meteor.subscribe('games');
+                     var games = Games.find({ _id: this.props.params.id }).fetch();
+                     // add games into current state
+                     this.setState({
+                       games
+                     });
+                   });
     } else {
       player2Number = el.dataset.number;
       var remove2 = this.state.games[0].secondPlayerNumbers;
       var removeIndex2 = remove2.indexOf(parseInt(player2Number));
-      
+
       remove2.splice(removeIndex2, 1);
       Games.update({ _id: this.state.games[0]._id},
-                   {$set: { player2Number: parseInt(player2Number), secondPlayerNumbers: remove2  }})
-    this.gameTracker = Tracker.autorun(() => {
-      Meteor.subscribe('games');
-      var games = Games.find({ _id: this.props.params.id }).fetch();
-      // add games into current state
-      this.setState({
-        games
-      });
-    });
+                   {$set: { player2Number: parseInt(player2Number), secondPlayerNumbers: remove2, playerTurn: 'player1'  }})
     }
+
+                 this.gameTracker = Tracker.autorun(() => {
+                   Meteor.subscribe('games');
+                   var games = Games.find({ _id: this.props.params.id }).fetch();
+                   // add games into current state
+                   this.setState({
+                     games
+                   });
+                 });
     if ( this.state.games[0].player2Number > 0  < this.state.games[0].player1Number) {
-        if (this.state.games[0].player1Number > parseInt(this.state.games[0].player2Number)) {
-          Games.update({ _id: this.state.games[0]._id},
-                   {$set: { player1Win: this.state.games[0].player1Win + 1 }})
-        }
-        if (this.state.games[0].player2Number > this.state.games[0].player1Number) {
-          Games.update({ _id: this.state.games[0]._id},
-                   {$set: { player2Win: this.state.games[0].player2Win + 1 }})
-        }
+
+      if (this.state.games[0].player1Number > parseInt(player2Number)) {
         Games.update({ _id: this.state.games[0]._id},
-                 {$set: { round: this.state.games[0].round + 1 , player1Number: 0, player2Number: 0}})
+                     {$set: { player1Win: this.state.games[0].player1Win + 1 }})
       }
+      if (parseInt(player2Number) > this.state.games[0].player1Number) {
+        Games.update({ _id: this.state.games[0]._id},
+                     {$set: { player2Win: this.state.games[0].player2Win + 1 }})
+      }
+      Games.update({ _id: this.state.games[0]._id},
+      {$set: { round: this.state.games[0].round + 1 , player1Number: 0, player2Number: 0}})
+
+      if ( this.state.games[0].player1Win >= 2 ) {
+        Games.update({ _id: this.state.games[0]._id},
+        {$set: { winner: 'Winner is Player1.', firstPlayerNumbers: [], secondPlayerNumbers: []}})
+
+      }
+      if ( this.state.games[0].player2Win >= 2 ) {
+        Games.update({ _id: this.state.games[0]._id},
+        {$set: { winner: 'Winner is Player2.', firstPlayerNumbers: [], secondPlayerNumbers: []}})
+      }
+
+      this.gameTracker = Tracker.autorun(() => {
+        Meteor.subscribe('games');
+        var games = Games.find({ _id: this.props.params.id }).fetch();
+        // add games into current state
+        this.setState({
+          games
+        });
+     });
+    }
   }
 
   // TODO: change game model field to meaningful
@@ -153,7 +179,8 @@ export default class Game extends React.Component {
           firstPlayer:       game.firstPlayer,
           firstPlayerEmail:  game.firstPlayerEmail,
           secondPlayer:      game.secondPlayer,
-          secondPlayerEmail: game.secondPlayerEmail
+          secondPlayerEmail: game.secondPlayerEmail,
+          winner:            game.winner,
         });
 
         // remove current game
