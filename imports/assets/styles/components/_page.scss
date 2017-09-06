@@ -3,3 +3,9 @@
   max-width: $site-max-width;
   padding: $space;
 }
+
+.btn {
+  padding: 2rem;
+  border: 2px solid $brand-primary; 
+  border-radius: .8rem;
+}

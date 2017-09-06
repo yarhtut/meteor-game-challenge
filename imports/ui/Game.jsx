@@ -15,8 +15,7 @@ export default class Game extends React.Component {
   constructor(props){
     super(props);
     this.state = {
-      games: [],
-      btnDisabled: false
+      games: []
     };
     //this.onPlay = this.onPlay.bind(this);
   }
@@ -46,16 +45,36 @@ export default class Game extends React.Component {
     });
     // current user in game ?
     if ( currentGame[0] == true ) {
-
       return this.state.games.map((game) => {
 
-        var player1 = game.firstPlayerNumbers.map((playerNumber) =>  <button  ref='btn' onClick={this.onPlay.bind(this)} data-number={playerNumber} data-name='player1' key={playerNumber}>{playerNumber}</button>)
-        var player2 = game.secondPlayerNumbers.map((playerNumber) =>  <button ref='btn' data-number={playerNumber} data-name='player2' key={playerNumber}>{playerNumber}</button>)
+        var player1 = game.firstPlayerNumbers.map((playerNumber) =>  {
+          return (
+          <button
+            className='btn btn-card'
+            onClick={this.onPlay.bind(this)}
+            data-number={playerNumber}
+            data-name='player1'
+            key={playerNumber}>
+            {playerNumber}
+          </button>
+          )})
+          var player2 = game.secondPlayerNumbers.map((playerNumber) =>  {
+            return (
+            <button 
+              className='btn btn-card'
+              onClick={this.onPlay.bind(this)}
+              data-number={playerNumber}
+              data-name='player2'
+              key={playerNumber}>
+              {playerNumber}
+            </button>
+            )})
 
         return (
           <div>
             <p key={game._id}>GameId: {game._id}- FirstPlayer: {game.firstPlayerEmail} - SecondPlayer: {game.secondPlayerEmail}</p>
             <br />
+            <h1>This is { game.playerTurn } Turn.</h1>
             { (game.firstPlayer == currentUser._id) ? player1 : player2 }
           </div>
           )
@@ -69,22 +88,17 @@ export default class Game extends React.Component {
   onPlay(e){
     e.preventDefault();
     var el = e.target;
-    debugger
-    el.refs.btn.setAttribute('disabled', 'disabled');
-
+    var player1Number = 0;
+    var player2Number = 0;
     if ( el.dataset.name == 'player1' ) {
       player1Number = el.dataset.number;
-     console.log(this.state.games[0].firstPlayerNumbers)
+      var remove1 = this.state.games[0].firstPlayerNumbers;
 
+      var removeIndex1 = remove1.indexOf(parseInt(player1Number));
+      
+      remove1.splice(removeIndex1, 1);
       Games.update({ _id: this.state.games[0]._id},
-                   {$set: { player1Number: player1Number  }})
-    } else {
-      player2Number = el.dataset.number;
-
-
-      Games.update({ _id: this.state.games[0]._id},
-                   {$set: { player2Number: player2Number}})
-    }
+      {$set: { player1Number: parseInt(player1Number), firstPlayerNumbers: remove1  }})
 
     this.gameTracker = Tracker.autorun(() => {
       Meteor.subscribe('games');
@@ -94,19 +108,35 @@ export default class Game extends React.Component {
         games
       });
     });
-
-    if ( this.state.games[0].player2Number > 0 < this.state.games[0].player1Number){
-      if (this.state.games[0].player1Number > this.state.games[0].player2Number) {
-        Games.update({ _id: this.state.games[0]._id},
-                 {$set: { player1Win: this.state.games[0].player1Win + 1 }})
-      }
-      if (this.state.games[0].player2Number > this.state.games[0].player1Number) {
-        Games.update({ _id: this.state.games[0]._id},
-                 {$set: { player2Win: this.state.games[0].player2Win + 1 }})
-      }
+    } else {
+      player2Number = el.dataset.number;
+      var remove2 = this.state.games[0].secondPlayerNumbers;
+      var removeIndex2 = remove2.indexOf(parseInt(player2Number));
+      
+      remove2.splice(removeIndex2, 1);
       Games.update({ _id: this.state.games[0]._id},
-               {$set: { round: this.state.games[0].round + 1 , player1Number: 0, player2Number: 0}})
+                   {$set: { player2Number: parseInt(player2Number), secondPlayerNumbers: remove2  }})
+    this.gameTracker = Tracker.autorun(() => {
+      Meteor.subscribe('games');
+      var games = Games.find({ _id: this.props.params.id }).fetch();
+      // add games into current state
+      this.setState({
+        games
+      });
+    });
     }
+    if ( this.state.games[0].player2Number > 0  < this.state.games[0].player1Number) {
+        if (this.state.games[0].player1Number > parseInt(this.state.games[0].player2Number)) {
+          Games.update({ _id: this.state.games[0]._id},
+                   {$set: { player1Win: this.state.games[0].player1Win + 1 }})
+        }
+        if (this.state.games[0].player2Number > this.state.games[0].player1Number) {
+          Games.update({ _id: this.state.games[0]._id},
+                   {$set: { player2Win: this.state.games[0].player2Win + 1 }})
+        }
+        Games.update({ _id: this.state.games[0]._id},
+                 {$set: { round: this.state.games[0].round + 1 , player1Number: 0, player2Number: 0}})
+      }
   }
 
   // TODO: change game model field to meaningful
@@ -142,11 +172,6 @@ export default class Game extends React.Component {
       <div className='page-content'>
         <button onClick={this.onLogout.bind(this)}>Logout</button>
         { this.renderGameRoom() }
-        <ul>
-          <li>
-            <button></button>
-          </li>
-        </ul>
       </div>
       )
 }

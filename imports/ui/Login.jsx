@@ -66,7 +66,8 @@ export default class Login extends React.Component {
           player2Number: 0,
           player1Win: 0,
           player2Win: 0,
-          round: 0
+          round: 0,
+          playerTurn: 'player1'
         });
 
         userInRoom.map((room) => {
