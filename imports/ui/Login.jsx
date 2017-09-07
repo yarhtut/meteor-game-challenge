@@ -1,7 +1,12 @@
+// Meteor
+import { Meteor } from 'meteor/meteor';
+
+// React
 import React from 'react';
 import { Link } from 'react-router';
-import { Meteor } from 'meteor/meteor';
-import { Rooms } from '../api/rooms';
+
+// Model
+import { Queues } from '../api/queues';
 import { Games } from '../api/games';
 import { Players } from '../api/players';
 import { GamesHistory } from '../api/gameHistory';
@@ -14,8 +19,9 @@ export default class Login extends React.Component {
     }
   }
 
-  // Form submit function for Login
+  // Meteor default Authentication
   // @params in Events { email , password }
+  // TODO: refactor [ extract to login class or something ]
   onSubmit(e) {
     e.preventDefault();
     let email = this.refs.email.value.trim();
@@ -25,18 +31,28 @@ export default class Login extends React.Component {
     Meteor.loginWithPassword({email}, password, () => {
       currentUser = Meteor.user();
 
-      Rooms.insert({
+      Queues.insert({
         users: currentUser._id,
         userEmail: email,
         inGame: false
       })
 
-      let roomCount = Rooms.find().count();
+      let roomCount = Queues.find().count();
 
       if(roomCount == 2 ) {
-        let userInRoom = Rooms.find().fetch();
+        let userInRoom = Queues.find().fetch();
         let usersInRoom  = userInRoom.map((room) => room.users);
         let userEmailInRoom  = userInRoom.map((room) => room.userEmail);
+
+        gameNumber = [1,2,3,4,5,6,7,8,9,10];
+        const gameNumbers = gameNumber.sort(function() { return 0.5 - Math.random() });
+        const player1 = [];
+        const player2 = [];
+
+        for (var i = 0; i < gameNumbers.length; i += 2) {
+          player1.push(gameNumbers[i]);
+          gameNumbers[i+1] && player2.push(gameNumbers[i+1]);
+        }
 
         Games.insert({
           game:              usersInRoom,
@@ -44,19 +60,27 @@ export default class Login extends React.Component {
           firstPlayerEmail:  userEmailInRoom[0],
           secondPlayer:      usersInRoom[1],
           secondPlayerEmail: userEmailInRoom[1],
-          createGame:        true
+          firstPlayerNumbers: player1,
+          secondPlayerNumbers: player2,
+          player1Number: 0,
+          player2Number: 0,
+          player1Win: 0,
+          player2Win: 0,
+          round: 0,
+          playerTurn: 'player1',
+          winner: ''
         });
 
         userInRoom.map((room) => {
           Players.insert({
             userId: room.users,
             userEmail: room.userEmail,
-            againstPlayer: usersInRoom 
+            againstPlayer: usersInRoom
           });
         });
 
         let usersIdInRoom  = userInRoom.map((room) => {
-          Rooms.remove({ _id: room._id})
+          Queues.remove({ _id: room._id})
         });
       }
     });
@@ -79,7 +103,7 @@ export default class Login extends React.Component {
           <Link to="/signup">Signup for an account?</Link>
         </div>
       </div>
-    );
-  }
+      );
+}
 }
 

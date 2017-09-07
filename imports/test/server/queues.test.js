@@ -1,13 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import expect from 'expect';
 
-import { Rooms } from './../../api/rooms';
+import { Queues } from './../../api/queues';
 
 if ( Meteor.isServer) {
-  describe('Rooms', function() {
+  describe('Queues', function() {
     beforeEach(function() {
-      Rooms.remove({});
-      Rooms.insert({
+      Queues.remove({});
+      Queues.insert({
         _id: 'testPlayerId',
         playerName: 'TestYar',
         playerScore: '',
@@ -20,7 +20,7 @@ if ( Meteor.isServer) {
       const userId = 'testId';
       const _id =  Meteor.server.method_handlers['rooms.insert'].apply({ userId: 'testId'})
 
-      expect(Rooms.findOne({ _id, userId: 'testId' })).toExist();
+      expect(Queues.findOne({ _id, userId: 'testId' })).toExist();
     });
 
     it('should not insert if not authenticated', function() {
@@ -32,7 +32,7 @@ if ( Meteor.isServer) {
 
     it('should remove player form room', function() {
       Meteor.server.method_handlers['rooms.remove'].apply({ userId: 'testUserId1'}, ['testNoteId1']);
-      expect(Rooms.findOne({ _id: 'testNoteId'})).toNotExist();
+      expect(Queues.findOne({ _id: 'testNoteId'})).toNotExist();
     });
 
 
