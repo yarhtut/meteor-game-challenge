@@ -1,3 +1,12 @@
+### Install Meteor cli	(https://guide.meteor.com/)
+`curl https://install.meteor.com/ | sh`
+
+### Clone repo
+`git clone git@github.com:yarhtut/meteor-game-challenge.git`
+
+### npm install
+`npm install`
+
 ### Meteor server
 `meteor run`
 
